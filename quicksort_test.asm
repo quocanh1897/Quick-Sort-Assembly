@@ -118,67 +118,59 @@ newLine: .asciiz "\n"
       lw $a1, 0($sp)		#load..
   		lw $a2, 4($sp)		#..a1, a2..
 		addi $sp, $sp, 8	#..from stack
-  	
-  	
-  	
-         	jal printResult		#print test1ay
-         	
-         	add $v1, $0, $s1		#return partitionPointer=leftPointer
-         	lw $ra, 0($sp)
-  	addi $sp, $sp, 4
+     	jal printResult	
+        	
+     	add $v1, $0, $s1	#return v1 = s1 (=left)
+     	lw $ra, 0($sp)
+  		addi $sp, $sp, 4
 	
-         	jr $ra		#exit Partition Function
+	  	jr $ra	
+#end partition
 
 
-###########################################
-#quickSort Function
-#parameter	$a1: left x4	$a2: right x4
-#return	void
-##############################################	
-  quickSort:	
-  	addi $sp, $sp, -4		#store $ra to stack
+  quickSort: #void quickSort(int *s0(test case), int *left = a1, int *right = a2)
+  	subi $sp, $sp, 4	
   	sw $ra, 0($sp)
+
+   bge $a1, $a2, exitQuickSort #if (left >= right) then exitQuickSort
   	
-  
-   	slt $t0, $a1, $a2		#check condition of the end
-   	beq $t0, $0,  exitQuickSort
-   	
-   	
-  	
-  	add $a3, $s0, $a2		#pivot = Array[right];
+  	add $a3, $s0, $a2	#pivot = testcase[right];
   	lw $a3, 0($a3)
   	
-  	jal partition		#partition(left,  right,  pivot);
+  	jal partition		
   	
-  	add $s1 , $0, $v1		#return partitionPointer address
-  	sub $s1, $s1, $s0		#change to partitionPoint x4
+  	add $t1 , $0, $v1		#partition address
+  	sub $t1, $t1, $s0		#change to partitionPoint x4
   	
-  	addi $sp, $sp, -12		#add parameter to stack
-         	sw $a1, 0($sp)
+  	subi $sp, $sp, 12		
+   sw $a1, 0($sp)
   	sw $a2, 4($sp)
-  	sw $s1, 8($sp)
+  	sw $t1, 8($sp)
   	
-  	addi $a2, $s1, -4		#partitionPoint-1
-  	jal quickSort		#quickSort(left, partitionPoint-1);
+  	subi $a2, $t1, 4		#partitionPoint - 1
+  	jal quickSort			#quickSort(testcase, left, partitionPoint - 1)
   	
-   	lw $a1, 0($sp)		#load from stack
+  	#load from stack
+   lw $a1, 0($sp)		
   	lw $a2, 4($sp)
-  	lw $s1, 8($sp)
-  	addi $sp, $sp, 12
-   
-   	addi $sp, $sp, -12		#add parameter to stack
-         	sw $a1, 0($sp)
+  	lw $t1, 8($sp)
+  	
+  	#save to stack
+   sw $a1, 0($sp)
   	sw $a2, 4($sp)
-  	sw $s1, 8($sp)
+  	sw $t1, 8($sp)
   	
-  	addi $a1, $s1, 4		#partitionPoint+1
-  	jal quickSort		#quickSort(partitionPoint+1, right);
+  	addi $a1, $t1, 4		#partitionPoint + 1
+  	jal quickSort			#quickSort(testcase, partitionPoint + 1, right);
   	
-   	lw $a1, 0($sp)		#load from stack
+  	#load from stack
+   lw $a1, 0($sp)		
   	lw $a2, 4($sp)
-  	lw $s1, 8($sp)
-  	addi $sp, $sp, 12
+  	lw $t1, 8($sp)
+  	addi $sp, $sp, 12 #pop stack x3
+  	
    exitQuickSort:
   	lw $ra, 0($sp)
   	addi $sp, $sp, 4
-  	jr $ra    
+  	jr $ra  
+#end quickSort  
