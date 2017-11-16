@@ -1,14 +1,10 @@
 .data
-test1: .word 9 8 4 2 1 3 45 #7 so
-test2: .word 34 5 88 4 56 98 7 70 23 63 44 87 #12 so
-test3: .word 69 7 2 4 3 45 48 55 5 6 36 35 21 120 555 784 1 10 12 15 41 47 45 78 77 65 13 123 31 91 #30 so
-test4: .word 47 5 49 55 8 6 2 20 1 2 12 45 65 32 201 1 0 6 9 40 #20 so
-test5: .word 5 5 4 1 41 12 23 20 25 11 44 55 86 95 210 256 14 13 0 9 #20 so
-size5: .word 20
-size4: .word 20
-size3: .word 30
-size2: .word 12
-size1: .word 7
+test1: .word  47 5 49 55 8 6 2 20 1 2 12 45 65 32 201 1 0 6 9 40 
+test2: .word 5 5 4 1 41 12 23 20 25 11 44 55 86 95 210 256 14 13 0 9
+test3: .word 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+test4: .word 99 98 97 96 95 94 93 92 91 90 89 88 87 86 85 84 83 82 81 80
+test5: .word 5 5 4 1 41 12 23 20 25 11 44 55 86 95 210 256 14 13 0 9
+size: .word 20
 space: .asciiz " "
 newLine: .asciiz "\n"
 
@@ -16,7 +12,7 @@ newLine: .asciiz "\n"
   main:
   
   	la $s0, test4 #load test case
-  	lw $s7, size4 #load size cua test case
+  	lw $s7, size #load size cua test case
   	
   	jal printResult
   	
@@ -154,7 +150,15 @@ newLine: .asciiz "\n"
   	subi $a2, $t1, 4		#right = partitionPoint - 1
   	jal quickSort			#quickSort(testcase, left, partitionPoint - 1)
   	
-	#van giu nguyen stack dang chua a1, a2, t1
+	#load from stack
+   lw $a1, 0($sp)		
+  	lw $a2, 4($sp)
+  	lw $t1, 8($sp)
+  	
+  	#save to stack
+   sw $a1, 0($sp)
+  	sw $a2, 4($sp)
+  	sw $t1, 8($sp)
   	
   	addi $a1, $t1, 4		#partitionPoint + 1
   	jal quickSort			#quickSort(testcase, partitionPoint + 1, right);
