@@ -1,9 +1,9 @@
 .data
-test1: .word  47 5 49 55 8 6 2 20 1 2 12 45 65 32 201 1 0 6 9 40 
+test1: .word 47 5 49 55 8 6 2 20 1 2 12 45 65 32 201 1 0 6 9 40 
 test2: .word 5 5 4 1 41 12 23 20 25 11 44 55 86 95 210 256 14 13 0 9
 test3: .word 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
 test4: .word 99 98 97 96 95 94 93 92 91 90 89 88 87 86 85 84 83 82 81 80
-test5: .word 5 5 4 1 41 12 23 20 25 11 44 55 86 95 210 256 14 13 0 9
+test5: .word 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 
 size: .word 20
 space: .asciiz " "
 newLine: .asciiz "\n"
@@ -11,7 +11,7 @@ newLine: .asciiz "\n"
 .text
   main:
   
-  	la $s0, test4 #load test case
+  	la $s0, test5 #load test case
   	lw $s7, size #load size cua test case
   	
   	jal printResult
