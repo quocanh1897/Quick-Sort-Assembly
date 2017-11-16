@@ -6,7 +6,7 @@
  array: .word 0 : 1000 # array cac phan tu kieu word, chua array ketqua
  test1: .word 34 5 88 4 56 98 7 70 23 63 44 87 #12 so
  test2: .word 6 7 2 4 3 45 45 55 5 6 36 35 21 120 555 784 1 10 12 15 41 47 45 78 77 65 12 123 31 91 #30 so
- size: .word 12 # actual count of the elements in the ar$ray.
+ size: .word 12 # so phan tu can sort trong ar$ray.
  ask: .asciiz "Input number of values to be sorted (0 < N < 1000): "
  input: .asciiz "Input each value: "
  sorted_array_string: .asciiz "Sorted:"
@@ -35,10 +35,12 @@ main:
  syscall 
  
 ### input loop
+
  receive_values_loop_prep:
  la $t0, array # load ar$ray to $$t0.
  lw $t1, size # load size to $t1.
  li $t2, 0 # loop iter, starting from 0.
+ 
  receive_values_loop:
  bge $t2, $t1, receive_values_end # while ($t2 < $t1).
  li $v0, 4 # prompt at every ite$ration during input
@@ -57,9 +59,8 @@ main:
  addi $t2, $t2, 1 # increment loop iter by 1.
  j receive_values_loop # jump back to the beginning of the loop.
  receive_values_end:
- jal print # printing user input values
- # Set up the main mergesort call.
- # Ar$rays are	
+ jal print # print input values
+ 
  la $a0, array # a0 adrs of the array
  li $a1, 0 # left val
  lw $a2, size # right val
@@ -67,23 +68,27 @@ main:
  jal def_quick_sort 
  jal print
  j exit
+
+# tham so quickSort:
 # a0 - address of array
-# a1 - zero
+# a1 - 0
 # a2 - size-1 of array
-# 
+
 def_quick_sort:
- bge $a1, $a2, qs_End # end condition 
- # 
+ bge $a1, $a2, qs_End # while(a1 < a2)
+ 
  addi $sp, $sp, -20
  sw $ra, 0($sp) # save return adrs
- sw $a0, 8($sp) # adrs
- sw $a1, 12($sp) # save left val
- sw $a2, 16($sp) # save right val
- jal def_partition # v0 = def_partition(arr, l, r)
+ sw $a0, 8($sp) 
+ sw $a1, 12($sp) # save left 
+ sw $a2, 16($sp) # save right 
+ 
+ jal def_partition # v0 = def_partition(arr, left, right)
  lw $ra, 0($sp) #
  sw $v0, 4($sp) 
  # lw $a0, 8($sp) # 
  lw $a1, 12($sp) # 
+ 
  addi $a2, $v0, -1 # 
  jal def_quick_sort
  lw $ra, 0($sp) #
@@ -96,11 +101,13 @@ def_quick_sort:
  lw $ra, 0($sp) 
 qs_End: 
  jr $ra
-# partition subroutine
+ 
+# tham so cua partition:
 # a0 - address of array
-# a1 - zero
+# a1 - 0
 # a2 - size-1 of array
-# 
+
+
 def_partition:
  add $t0, $a1, $zero
  add $t1, $a2, $zero 
@@ -109,12 +116,14 @@ def_partition:
  lw $t2, ($t7) # key
  addi $t1, $t1, -1
  li $t5, -1 # t5 = i
+ 
  loop:
- bgt $t0, $t1, loop_end # t0 = j
- mul $t7, $t0, 4
+ bgt $t0, $t1, loop_end # t0 = j// while(t0 < t1) 
+ mul $t7, $t0, 4 
  add $t7, $a0, $t7
  lw $t3, ($t7)
  ble $t3, $t2, incl
+ 
  incl_return:
  addi $t0, $t0, 1
  j loop
@@ -134,6 +143,7 @@ def_partition:
  sw $s0, ($t7)
  sw $s1, ($t6)
  j incl_return
+ 
  swap_p:
  addi $t5, $t5, 1
  mul $t6, $t5, 4
@@ -150,6 +160,7 @@ def_partition:
 exit:
  li $v0, 10 # 10 = exit syscall.
  syscall 
+ 
 ### Printing
 print:
  print_loop_prep:
