@@ -1,9 +1,10 @@
 .data
 test1: .word 9 8 4 2 1 3 45 #7 so
-test2: .word 6 7 2 4 3 45 45 55 5 6 36 35 21 120 555 784 1 10 12 15 41 47 45 78 77 65 12 123 31 91 #30 so
-test3: .word 34 5 88 4 56 98 7 70 23 63 44 87 #12 so
-size3: .word 12
-size2: .word 30
+test2: .word 34 5 88 4 56 98 7 70 23 63 44 87 #12 so
+test3: .word 69 7 2 4 3 45 48 55 5 6 36 35 21 120 555 784 1 10 12 15 41 47 45 78 77 65 13 123 31 91 #30 so
+
+size3: .word 30
+size2: .word 12
 size1: .word 7
 space: .asciiz " "
 newLine: .asciiz "\n"
@@ -11,8 +12,8 @@ newLine: .asciiz "\n"
 .text
   main:
   
-  	la $s0, test1 #load test case
-  	lw $s7, size1 #load size cua test case
+  	la $s0, test2 #load test case
+  	lw $s7, size2 #load size cua test case
   	
   	jal printResult
   	
@@ -24,7 +25,8 @@ newLine: .asciiz "\n"
   	jal quickSort
 	li $v0, 10 #break
 	syscall
-	  
+ #end main	
+	
  swap: #void swap(int a1, int a2)
   	lw $t1, 0($a1)		#temp1 = a1	
   	lw $t2, 0($a2)		#temp2 = a2
@@ -35,7 +37,7 @@ newLine: .asciiz "\n"
   	jr $ra  	  
  #end swap
   
- printResult: #void printResult(int* s0, int size = s7)
+ printResult: #void printResult(int* s0(test case), int size = s7)
 	add $t2, $0, $s0		#test case
 	add $t1, $0, $s7		#size test case
 	addi $t0, $0, 0		#i = t0;
@@ -64,7 +66,7 @@ newLine: .asciiz "\n"
  #end printResult
 
 
- partition: #int(v1) partition(int *left = a1, int *right = a2, pivot = a3)
+ partition: #int(v1) partition(int *s0(test case), int *left = a1, int *right = a2, pivot = a3)
  	subi $sp, $sp, 4		#save $ra..
   	sw $ra, 0($sp)			#..vao stack
  		
@@ -73,46 +75,49 @@ newLine: .asciiz "\n"
   	add $s2, $s0, $a2		#s2 = right
   	
    loopPartition:
+   
       loopLeft:
-    		addi $s1, $s1, 4		# ++ leftPointer
-    		lw $t1, 0($s1)		#load so leftPointr vao bien $t1
-    		slt $t0, $t1 , $a3	#so sanh voi pivot
-    		bne $t0, $0, loopLeft
+    		addi $s1, $s1, 4		  #doi con tro left ve so ke tiep
+    		lw $t1, 0($s1)			  #t1 = left
+    		blt $t1, $a3, loopLeft #do loopLeft while (left < pivot)
+    		
       loopRight:
-    		beq $s2, $s0, exitRight	#exit neu rightPointer=0
-    		addi $s2, $s2, -4		# -- rightPointer
-    		lw $t1, 0($s2)		#load so leftPointr vao bien $t1
-    		slt $t0, $t1 , $a3	#so sanh voi pivot
-    		beq $t0, $0, loopRight
+    		beq $s2, $s0, exitRight	#if (right = testcase) then exitRight
+    		subi $s2, $s2, 4			#doi con tro right ve so truoc no
+    		lw $t1, 0($s2)				#t1 = right
+    		bge $t1, $a3, loopRight #do loopRight while(right >= pivot)
+    		
       exitRight:
-         slt $t0, $s1, $s2		#if(leftPointer<rightPointer)
-         beq $t0, $0, exitLoopPartition	# branch when leftPoniter>= rightPointer
-         	
-         addi $sp, $sp, -8		#add to stack
-         sw $a1, 0($sp)
-  			sw $a2, 4($sp)
-  	
-         add $a1, $0, $s1		#swap(leftPointer, rightPointer);
+         bge $s1, $s2, exitLoopPartition #if(left >= right) then exitLoopPartition
+         
+         subi $sp, $sp, 8	#save..
+         sw $a1, 0($sp)		#..a1..
+  			sw $a2, 4($sp)		#..a2 vao stack
+  			
+  			#swap(left, right)
+         add $a1, $0, $s1	
         	add $a2, $0, $s2
         	jal swap
          	
-        	lw $a1, 0($sp)		#load from stack
-  			lw $a2, 4($sp)
-		  	addi $sp, $sp, 8
+        	lw $a1, 0($sp)		#load..
+  			lw $a2, 4($sp)		#..a1, a2..
+		  	addi $sp, $sp, 8	#..from stack
   	
          j loopPartition
+         
    exitLoopPartition:
-   	addi $sp, $sp, -8		#add to stack
-         	sw $a1, 0($sp)
-  	sw $a2, 4($sp)
+   	subi $sp, $sp, 8	#save..
+      sw $a1, 0($sp)		#..a1..
+ 	 	sw $a2, 4($sp)		#..a2 vao stack
          	
- 	add $a1, $0, $s1		#swap(leftPointer, right);
- 	add $a2, $s0, $a2
-         	jal swap
+      #swap(left, right)
+	 	add $a1, $0, $s1		
+ 		add $a2, $s0, $a2
+      jal swap
          	
-         	lw $a1, 0($sp)		#load from stack
-  	lw $a2, 4($sp)
-  	addi $sp, $sp, 8
+      lw $a1, 0($sp)		#load..
+  		lw $a2, 4($sp)		#..a1, a2..
+		addi $sp, $sp, 8	#..from stack
   	
   	
   	
