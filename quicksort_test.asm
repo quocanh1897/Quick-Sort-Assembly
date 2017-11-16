@@ -2,7 +2,10 @@
 test1: .word 9 8 4 2 1 3 45 #7 so
 test2: .word 34 5 88 4 56 98 7 70 23 63 44 87 #12 so
 test3: .word 69 7 2 4 3 45 48 55 5 6 36 35 21 120 555 784 1 10 12 15 41 47 45 78 77 65 13 123 31 91 #30 so
-
+test4: .word 47 5 49 55 8 6 2 20 1 2 12 45 65 32 201 1 0 6 9 40 #20 so
+test5: .word 5 5 4 1 41 12 23 20 25 11 44 55 86 95 210 256 14 13 0 9 #20 so
+size5: .word 20
+size4: .word 20
 size3: .word 30
 size2: .word 12
 size1: .word 7
@@ -12,8 +15,8 @@ newLine: .asciiz "\n"
 .text
   main:
   
-  	la $s0, test2 #load test case
-  	lw $s7, size2 #load size cua test case
+  	la $s0, test4 #load test case
+  	lw $s7, size4 #load size cua test case
   	
   	jal printResult
   	
@@ -23,6 +26,7 @@ newLine: .asciiz "\n"
   	subi $a2, $a2, 4 #..right 
   	
   	jal quickSort
+  	
 	li $v0, 10 #break
 	syscall
  #end main	
@@ -38,12 +42,11 @@ newLine: .asciiz "\n"
  #end swap
   
  printResult: #void printResult(int* s0(test case), int size = s7)
-	add $t2, $0, $s0		#test case
-	add $t1, $0, $s7		#size test case
+	add $t2, $0, $s0		#int *t2 = testcase
 	addi $t0, $0, 0		#i = t0;
 	
    loopPrint:
-		beq $t0,  $t1,  exitPrint	#while (i != size)
+		beq $t0,  $s7,  exitPrint	#while (i != size)
 		lw $a0,  0($t2)		#load test case
 		
 		li $v0, 1	#print int test case
@@ -66,7 +69,7 @@ newLine: .asciiz "\n"
  #end printResult
 
 
- partition: #int(v1) partition(int *s0(test case), int *left = a1, int *right = a2, pivot = a3)
+ partition: #int(v1) *partition(int *s0(test case), int *left = a1, int *right = a2, pivot = a3)
  	subi $sp, $sp, 4		#save $ra..
   	sw $ra, 0($sp)			#..vao stack
  		
@@ -142,23 +145,16 @@ newLine: .asciiz "\n"
   	add $t1 , $0, $v1		#partition address
   	sub $t1, $t1, $s0		#change to partitionPoint x4
   	
+  	#save to stack
   	subi $sp, $sp, 12		
    sw $a1, 0($sp)
   	sw $a2, 4($sp)
   	sw $t1, 8($sp)
   	
-  	subi $a2, $t1, 4		#partitionPoint - 1
+  	subi $a2, $t1, 4		#right = partitionPoint - 1
   	jal quickSort			#quickSort(testcase, left, partitionPoint - 1)
   	
-  	#load from stack
-   lw $a1, 0($sp)		
-  	lw $a2, 4($sp)
-  	lw $t1, 8($sp)
-  	
-  	#save to stack
-   sw $a1, 0($sp)
-  	sw $a2, 4($sp)
-  	sw $t1, 8($sp)
+	#van giu nguyen stack dang chua a1, a2, t1
   	
   	addi $a1, $t1, 4		#partitionPoint + 1
   	jal quickSort			#quickSort(testcase, partitionPoint + 1, right);
